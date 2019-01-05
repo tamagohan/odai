@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 fn main() {
     puts_fizz_buzz(100);
 }
@@ -8,14 +10,14 @@ fn puts_fizz_buzz(max: i32) -> () {
         .for_each(|word| println!("{}", word));
 }
 
-fn fizz_buzz(num: i32) -> String {
+fn fizz_buzz(num: i32) -> Cow<'static, str> {
     if num % 15 == 0 {
-        "FizzBuzz".to_string()
+        "FizzBuzz".into()
     } else if num % 3 == 0 {
-        "Fizz".to_string()
+        "Fizz".into()
     } else if num % 5 == 0 {
-        "Buzz".to_string()
+        "Buzz".into()
     } else {
-        num.to_string()
+        num.to_string().into()
     }
 }
