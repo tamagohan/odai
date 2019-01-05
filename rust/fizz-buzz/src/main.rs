@@ -21,3 +21,11 @@ fn fizz_buzz(num: i32) -> Cow<'static, str> {
         num.to_string().into()
     }
 }
+
+#[test]
+fn test_fizz_buzz() {
+    assert_eq!(fizz_buzz(1), "1");
+    assert_eq!(fizz_buzz(3), "Fizz");
+    assert_eq!(fizz_buzz(5), "Buzz");
+    assert_eq!(fizz_buzz(15), "FizzBuzz");
+}
