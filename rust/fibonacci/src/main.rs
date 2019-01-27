@@ -24,3 +24,19 @@ fn gen_until_imp(max: i32, mut seq: Vec<i32>, n1: i32, n2: i32) -> Vec<i32> {
         seq
     }
 }
+
+#[test]
+fn test_gen_until() {
+    assert_eq!(gen_until(1), vec![1]);
+    assert_eq!(gen_until(3), vec![1,2]);
+    assert_eq!(gen_until(5), vec![1,2,3]);
+    assert_eq!(gen_until(15), vec![1,2,3,5,8,13]);
+}
+#[test]
+fn test_sum_even_fibonacci() {
+    assert_eq!(sum_even_fibonacci(1), 0);
+    assert_eq!(sum_even_fibonacci(2), 2);
+    assert_eq!(sum_even_fibonacci(5), 2);
+    assert_eq!(sum_even_fibonacci(15), 10);
+    assert_eq!(sum_even_fibonacci(4_000_000), 4_613_732);
+}
