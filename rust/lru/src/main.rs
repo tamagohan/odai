@@ -1,28 +1,35 @@
 use std::collections::HashMap;
+use std::hash::Hash;
+use std::cmp::Eq;
+
 fn main() {
     let mut cache = LruCache::new(2);
     println!("{:?}", cache);
-    cache.set("a", 1);
-    println!("{:?}", cache.get("a"));
-    println!("{:?}", cache.get("b"));
-    cache.set("b", 2);
-    println!("{:?}", cache.get("b"));
+    cache.set(&100, 1);
+    println!("{:?}", cache.get(&100));
+    println!("{:?}", cache.get(&101));
+    cache.set(&101, 2);
+    println!("{:?}", cache.get(&101));
 }
 
 #[derive(Debug)]
-struct LruCache<'a> {
+struct LruCache<'a, K, V>
+    where K: Sized + Eq + Hash
+{
     size: i32,
-    cache: HashMap<&'a str, i32>
+    cache: HashMap<&'a K, V>
 }
 
-impl<'a> LruCache<'a> {
+impl<'a, K, V> LruCache<'a, K, V>
+    where K: Sized + Eq + Hash
+{
     pub fn new(max: i32) -> Self {
         LruCache{size: max, cache: HashMap::new()}
     }
-    pub fn set(&mut self, k: &'a str, v: i32) -> Option<i32>{
+    pub fn set(&mut self, k: &'a K, v: V) -> Option<V>{
         self.cache.insert(k, v)
     }
-    pub fn get(&mut self, k: &'a str) -> Option<&i32>{
+    pub fn get(&mut self, k: &'a K) -> Option<&V>{
         self.cache.get(k)
     }
 }
