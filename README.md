@@ -4,6 +4,9 @@ This repository is implementations of some 'odai' in several languages.
 Odai is following problems.
 
 1. [FizzBuzz](https://en.wikipedia.org/wiki/Fizz_buzz)
-   * [rust](./rust/fizz-buzz)
+   * [Rust](./rust/fizz-buzz)
+   * [Go](./go/fizz_buzz/fizz_buzz.go)
 1. [Even Fibonacci numbers](https://projecteuler.net/problem=2)
-   * [rust](./rust/fibonacci)
+   * [Rust](./rust/fibonacci)
+1. [LRU Cache](https://www.slideshare.net/t_wada/tddbc-exercise)
+   * [Rust](./rust/lru)
