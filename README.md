@@ -8,5 +8,6 @@ Odai is following problems.
    * [Go](./go/fizz_buzz/fizz_buzz.go)
 1. [Even Fibonacci numbers](https://projecteuler.net/problem=2)
    * [Rust](./rust/fibonacci)
+   * [Go](./go/fibonacci/fibonacci.go)
 1. [LRU Cache](https://www.slideshare.net/t_wada/tddbc-exercise)
    * [Rust](./rust/lru)
