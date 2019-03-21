@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// A Key must be comparable(http://golang.org/ref/spec#Comparison_operators)
 type Key interface{}
 type entry struct {
 	key   Key
@@ -73,9 +74,8 @@ func (c *Cache) remove(el *list.Element) {
 
 func main() {
 	c := New(10)
-	fmt.Println(c.Get("a"))
+
 	c.Add("a", 1)
-	fmt.Println(c.Get("a"))
-	c.Add("b", 2)
-	c.Add("a", 3)
+	v, _ := c.Get("a")
+	fmt.Printf("Value of 'a' is %v", v)
 }
