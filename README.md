@@ -10,4 +10,4 @@ Odai is following problems.
    * [Rust](./rust/fibonacci)
    * [Go](./go/fibonacci/fibonacci.go)
 1. [LRU Cache](https://www.slideshare.net/t_wada/tddbc-exercise)
-   * [Go](./go/lru/lru_cache.go)
+   * [Go](./go/lru_cache/lru_cache.go)
