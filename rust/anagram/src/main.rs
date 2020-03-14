@@ -1,47 +1,27 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
+use std::io;
 use std::io::{BufRead, BufReader};
+use std::path::Path;
 use std::result::Result;
-
-fn usage() {
-    println!("anagram WORD DIC_FILE_PATH")
-}
 
 struct Anagram {
     map: HashMap<String, Vec<String>>,
 }
 
 impl Anagram {
-    pub fn new(word_file_path: &str) -> Result<Self, &str> {
+    pub fn new<P: AsRef<Path>>(word_file_path: P) -> Result<Self, io::Error> {
         let mut anagram = Self {
             map: HashMap::new(),
         };
-        let f = match File::open(&word_file_path) {
-            Ok(file) => file,
-            Err(_) => return Err("An error occured while opening file."),
-        };
+        let f = File::open(&word_file_path)?;
         let bf = BufReader::new(f);
         for line in bf.lines() {
-            match line {
-                Ok(line) => anagram.add(&line),
-                Err(_) => return Err("An error occured while reading a line."),
-            };
+            let word = line?;
+            anagram.add(word);
         }
         return Ok(anagram);
-    }
-
-    pub fn add(&mut self, word: &str) {
-        let sorted_word = Anagram::sort(word);
-        match self.map.get_mut(&sorted_word) {
-            Some(values) => {
-                values.push(word.to_string());
-            }
-            None => {
-                self.map.insert(sorted_word, vec![word.to_string()]);
-            }
-        };
-        return;
     }
 
     pub fn search(&self, word: &str) -> Option<&Vec<String>> {
@@ -49,26 +29,23 @@ impl Anagram {
         return self.map.get(&sorted_word);
     }
 
+    fn add(&mut self, word: String) {
+        let sorted_word = Anagram::sort(&word);
+        self.map.entry(sorted_word).or_insert(Vec::new()).push(word);
+    }
+
     fn sort(word: &str) -> String {
         let mut chars: Vec<char> = word.chars().collect();
-        chars.sort_by(|a, b| a.cmp(b));
+        chars.sort();
         return chars.into_iter().collect::<String>();
     }
 }
 
 fn main() {
-    let word = match env::args().nth(1) {
-        Some(word) => word,
-        None => {
-            usage();
-            return;
-        }
-    };
-
-    let dic_file_path = match env::args().nth(2) {
-        Some(dic_file_path) => dic_file_path,
-        None => "/usr/share/dict/words".to_string(),
-    };
+    let word = env::args().nth(1).expect("USAGE: word");
+    let dic_file_path = env::args()
+        .nth(2)
+        .unwrap_or("/usr/share/dict/words".to_string());
     let anagram = match Anagram::new(&dic_file_path) {
         Ok(anagram) => anagram,
         Err(msg) => {
@@ -85,10 +62,15 @@ fn main() {
 #[test]
 fn test_gen_anagram() {
     let anagram = Anagram::new("./data/word.txt").unwrap();
-    assert_eq!(anagram.search("a"), Some(&vec!("a".to_string())));
+    assert_eq!(Some(&vec!("a".to_string())), anagram.search("a"));
     assert_eq!(
+        Some(&vec!["aba".to_string(), "baa".to_string()]),
         anagram.search("aab"),
-        Some(&vec!["aba".to_string(), "baa".to_string()])
     );
     assert_eq!(anagram.search("nonexists"), None);
+}
+
+#[test]
+fn test_invalid_file() {
+    assert!(Anagram::new("./nonexist/path.txt").is_err());
 }
