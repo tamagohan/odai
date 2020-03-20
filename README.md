@@ -13,6 +13,8 @@ Odai is following problems.
    * [Rust](./rust/rsgrep)
 1. [anagram](https://employment.en-japan.com/engineerhub/entry/2017/07/19/110000)
    * [Rust](./rust/anagram)
+1. [HTTP/0.9](https://employment.en-japan.com/engineerhub/entry/2017/07/19/110000)
+   * [Rust](./rust/http_server)
 1. [LRU Cache](https://www.slideshare.net/t_wada/tddbc-exercise#5)
    * [Go](./go/lru_cache/lru_cache.go)
 
