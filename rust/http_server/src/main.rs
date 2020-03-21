@@ -3,6 +3,8 @@ use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::thread;
 
+mod parser;
+
 fn http_server() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080")?;
 
