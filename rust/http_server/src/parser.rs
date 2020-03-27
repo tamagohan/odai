@@ -1,5 +1,6 @@
 use std::str;
 
+#[derive(Debug, PartialEq)]
 pub enum ParseResult<T> {
     Complete(T),
     Partial,
@@ -37,6 +38,7 @@ impl<T, E> From<Result<T, E>> for ParseResult<T> {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Request<'a>(&'a str);
 
 pub fn parse(mut buf: &[u8]) -> ParseResult<Request> {
@@ -56,4 +58,28 @@ pub fn parse(mut buf: &[u8]) -> ParseResult<Request> {
     buf = &buf[0..(buf.len() - end.len())];
 
     return str::from_utf8(&buf).map(Request).into();
+}
+
+#[test]
+fn parse_complete_get_request() {
+    let result = parse(b"GET_complete_body_\r\n");
+    assert_eq!(result, ParseResult::Complete(Request("_complete_body_")));
+    assert!(result.is_complete());
+}
+
+#[test]
+fn parse_partial_get_request() {
+    let result = parse(b"GET_partial_body_");
+    assert_eq!(result, ParseResult::Partial);
+    assert!(result.is_partial());
+}
+
+#[test]
+fn parse_post_request() {
+    assert_eq!(parse(b"POST_not_get_method_\r\n"), ParseResult::Error);
+}
+
+#[test]
+fn parse_invalid_format_request() {
+    assert_eq!(parse(b"_missing_http_method_\r\n"), ParseResult::Error);
 }
