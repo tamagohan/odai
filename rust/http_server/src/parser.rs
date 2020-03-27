@@ -39,7 +39,7 @@ impl<T, E> From<Result<T, E>> for ParseResult<T> {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Request<'a>(&'a str);
+pub struct Request<'a>(pub &'a str);
 
 pub fn parse(mut buf: &[u8]) -> ParseResult<Request> {
     use self::ParseResult::*;

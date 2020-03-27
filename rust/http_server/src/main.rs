@@ -18,11 +18,23 @@ fn http_server() -> io::Result<()> {
         };
 
         let _ = thread::spawn(move || -> io::Result<()> {
+            use parser::ParseResult::*;
+
+            let mut buf = Vec::new();
             loop {
                 let mut b = [0; 1024];
                 let n = stream.read(&mut b)?;
                 if n > 0 {
-                    stream.write(&b[0..n])?;
+                    buf.extend_from_slice(&b[0..n]);
+                    let r = parser::parse(&buf);
+                    match r {
+                        Complete(req) => {
+                            write!(stream, "OK: {}\r\n", req.0)?;
+                            return Ok(());
+                        }
+                        Partial => continue,
+                        _ => break (),
+                    }
                 } else {
                     break ();
                 }
