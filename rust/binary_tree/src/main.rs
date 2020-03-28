@@ -47,6 +47,10 @@ impl<T> BinaryTree<T> {
     pub fn replace(&mut self, to: Self) -> () {
         *self = to;
     }
+
+    pub fn delete(&mut self) -> () {
+        self.replace(Self::Nil)
+    }
 }
 
 fn main() {
@@ -133,4 +137,22 @@ fn test_replace() {
         &right.replace(tree2);
     }
     assert_eq!(&tree1, &tree3);
+
+    if let BinaryTree::Node { right, .. } = &mut tree1 {
+        (&mut (**right)).delete()
+    }
+    assert_eq!(
+        tree1,
+        bin_tree! {
+            val: 5,
+            left: bin_tree! {
+                val: 4,
+                left: bin_tree! {
+                    val: 11,
+                    left: bin_tree! { val: 7 },
+                    right: bin_tree! { val: 2 },
+                },
+            },
+        }
+    )
 }
