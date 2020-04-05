@@ -179,9 +179,9 @@ mod tests {
     #[test]
     fn test_search_depth_first() {
         let tree3 = gen_tree_3();
-        assert_eq!((tree3.search_depth_first(11)), true);
-        assert_eq!((tree3.search_depth_first(3)), false);
+        assert_eq!(tree3.search_depth_first(11), true);
+        assert_eq!(tree3.search_depth_first(3), false);
 
-        assert_eq!((BinaryTree::Nil.search_depth_first(11)), false);
+        assert_eq!(BinaryTree::Nil.search_depth_first(11), false);
     }
 }
