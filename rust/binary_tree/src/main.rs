@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 #[macro_export]
 macro_rules! bin_tree {
     ( val: $val:expr, left: $left:expr, right: $right:expr $(,)? ) => {
@@ -43,7 +45,7 @@ pub enum BinaryTree<T> {
     },
 }
 
-impl<T: std::cmp::PartialEq + Copy> BinaryTree<T> {
+impl<T: std::cmp::PartialEq + Copy + std::fmt::Debug> BinaryTree<T> {
     pub fn replace(&mut self, to: Self) -> () {
         *self = to;
     }
@@ -69,18 +71,34 @@ impl<T: std::cmp::PartialEq + Copy> BinaryTree<T> {
             }
         }
     }
-}
 
-fn main() {
-    let tree = bin_tree! {
-        val: 5,
-        left: bin_tree! {
-            val: 4,
-            left: bin_tree!{ val: 11 },
-        },
-        right: bin_tree!{ val: 8 },
-    };
-    println!("{:?}", tree);
+    pub fn search_breadth_first(&self, v: T) -> bool {
+        match self {
+            BinaryTree::Nil => return false,
+            BinaryTree::Node { .. } => {
+                let mut nodes = VecDeque::new();
+                nodes.push_back(self);
+                return self.search_breadth_first_imp(v, nodes);
+            }
+        }
+    }
+
+    pub fn search_breadth_first_imp(&self, v: T, mut nodes: VecDeque<&BinaryTree<T>>) -> bool {
+        match nodes.pop_front() {
+            None => return false,
+            Some(BinaryTree::Nil) => {
+                return self.search_breadth_first_imp(v, nodes);
+            }
+            Some(BinaryTree::Node { val, left, right }) => {
+                if *val == v {
+                    return true;
+                }
+                nodes.push_back(left);
+                nodes.push_back(right);
+                return self.search_breadth_first_imp(v, nodes);
+            }
+        };
+    }
 }
 
 #[cfg(test)]
@@ -179,9 +197,22 @@ mod tests {
     #[test]
     fn test_search_depth_first() {
         let tree3 = gen_tree_3();
-        assert_eq!(tree3.search_depth_first(11), true);
         assert_eq!(tree3.search_depth_first(3), false);
+        assert_eq!(tree3.search_breadth_first(5), true); // target is root node
+        assert_eq!(tree3.search_breadth_first(11), true); // target is internal node
+        assert_eq!(tree3.search_breadth_first(7), true); // target is leaf node
 
         assert_eq!(BinaryTree::Nil.search_depth_first(11), false);
+    }
+
+    #[test]
+    fn test_search_breadth_first() {
+        let tree3 = gen_tree_3();
+        assert_eq!(tree3.search_breadth_first(3), false);
+        assert_eq!(tree3.search_breadth_first(5), true); // target is root node
+        assert_eq!(tree3.search_breadth_first(11), true); // target is internal node
+        assert_eq!(tree3.search_breadth_first(7), true); // target is leaf node
+
+        assert_eq!(BinaryTree::Nil.search_breadth_first(11), false);
     }
 }
