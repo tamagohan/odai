@@ -45,7 +45,14 @@ pub enum BinaryTree<T> {
     },
 }
 
-impl<T: std::cmp::PartialEq + Copy + std::fmt::Debug> BinaryTree<T> {
+impl<
+        T: std::cmp::PartialEq
+            + Copy
+            + std::fmt::Debug
+            + std::default::Default
+            + std::ops::Add<T, Output = T>,
+    > BinaryTree<T>
+{
     pub fn replace(&mut self, to: Self) -> () {
         *self = to;
     }
@@ -83,7 +90,7 @@ impl<T: std::cmp::PartialEq + Copy + std::fmt::Debug> BinaryTree<T> {
         }
     }
 
-    pub fn search_breadth_first_imp(&self, v: T, mut nodes: VecDeque<&BinaryTree<T>>) -> bool {
+    fn search_breadth_first_imp(&self, v: T, mut nodes: VecDeque<&BinaryTree<T>>) -> bool {
         match nodes.pop_front() {
             None => return false,
             Some(BinaryTree::Nil) => {
@@ -98,6 +105,32 @@ impl<T: std::cmp::PartialEq + Copy + std::fmt::Debug> BinaryTree<T> {
                 return self.search_breadth_first_imp(v, nodes);
             }
         };
+    }
+
+    pub fn exists_path_weights_of(&self, v: T) -> bool
+    where
+        T: std::ops::Add,
+    {
+        self.exists_path_weights_of_imp(v, T::default())
+    }
+
+    fn exists_path_weights_of_imp(&self, v: T, sum: T) -> bool {
+        match self {
+            BinaryTree::Nil => return false,
+            BinaryTree::Node { val, left, right } => {
+                let new_sum = sum + *val;
+                if new_sum == v {
+                    return true;
+                }
+                if left.exists_path_weights_of_imp(v, new_sum) {
+                    return true;
+                }
+                if right.exists_path_weights_of_imp(v, new_sum) {
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }
 
@@ -214,5 +247,16 @@ mod tests {
         assert_eq!(tree3.search_breadth_first(7), true); // target is leaf node
 
         assert_eq!(BinaryTree::Nil.search_breadth_first(11), false);
+    }
+
+    #[test]
+    fn test_exists_path_weights_of() {
+        let tree3 = gen_tree_3();
+        assert_eq!(tree3.exists_path_weights_of(28), false);
+        assert_eq!(tree3.exists_path_weights_of(5), true); // tail node of path is root node
+        assert_eq!(tree3.exists_path_weights_of(20), true); // tail node of path is internal node
+        assert_eq!(tree3.exists_path_weights_of(27), true); // tail node of path is leaf node
+
+        assert_eq!(BinaryTree::Nil.exists_path_weights_of(27), false);
     }
 }
