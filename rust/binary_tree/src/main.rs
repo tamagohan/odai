@@ -62,19 +62,20 @@ impl<
     }
 
     pub fn search_depth_first(&self, v: T) -> bool {
+        use BinaryTree::{Nil, Node};
         match self {
-            BinaryTree::Nil => return false,
-            BinaryTree::Node { val, left, right } => {
+            Nil => false,
+            Node { val, left, right } => {
+                println!("{:?}", val);
                 if v == *val {
                     return true;
                 }
-                if left.search_depth_first(v) {
-                    return true;
-                }
-                if right.search_depth_first(v) {
-                    return true;
-                }
-                return false;
+                return match (&(**left), &(**right)) {
+                    (Nil, Nil) => false,
+                    (_, Nil) => left.search_depth_first(v),
+                    (Nil, _) => right.search_depth_first(v),
+                    (_, _) => left.search_depth_first(v) || right.search_depth_first(v),
+                };
             }
         }
     }
@@ -115,20 +116,23 @@ impl<
     }
 
     fn exists_path_weights_of_imp(&self, v: T, sum: T) -> bool {
+        use BinaryTree::{Nil, Node};
         match self {
-            BinaryTree::Nil => return false,
-            BinaryTree::Node { val, left, right } => {
+            Nil => return false,
+            Node { val, left, right } => {
                 let new_sum = sum + *val;
                 if new_sum == v {
                     return true;
                 }
-                if left.exists_path_weights_of_imp(v, new_sum) {
-                    return true;
-                }
-                if right.exists_path_weights_of_imp(v, new_sum) {
-                    return true;
-                }
-                return false;
+                return match (&(**left), &(**right)) {
+                    (Nil, Nil) => false,
+                    (_, Nil) => left.exists_path_weights_of_imp(v, new_sum),
+                    (Nil, _) => right.exists_path_weights_of_imp(v, new_sum),
+                    (_, _) => {
+                        left.exists_path_weights_of_imp(v, new_sum)
+                            || right.exists_path_weights_of_imp(v, new_sum)
+                    }
+                };
             }
         }
     }
@@ -231,10 +235,9 @@ mod tests {
     fn test_search_depth_first() {
         let tree3 = gen_tree_3();
         assert_eq!(tree3.search_depth_first(3), false);
-        assert_eq!(tree3.search_breadth_first(5), true); // target is root node
-        assert_eq!(tree3.search_breadth_first(11), true); // target is internal node
-        assert_eq!(tree3.search_breadth_first(7), true); // target is leaf node
-
+        assert_eq!(tree3.search_depth_first(5), true); // target is root node
+        assert_eq!(tree3.search_depth_first(11), true); // target is internal node
+        assert_eq!(tree3.search_depth_first(7), true); // target is leaf node
         assert_eq!(BinaryTree::Nil.search_depth_first(11), false);
     }
 
