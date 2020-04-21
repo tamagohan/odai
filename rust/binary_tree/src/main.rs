@@ -67,7 +67,7 @@ impl<
             Nil => false,
             Node { val, left, right } => {
                 println!("{:?}", val);
-                if v == *val {
+                if *val == v {
                     return true;
                 }
                 return match (&(**left), &(**right)) {
@@ -115,22 +115,22 @@ impl<
         self.exists_path_weights_of_imp(v, T::default())
     }
 
-    fn exists_path_weights_of_imp(&self, v: T, sum: T) -> bool {
+    fn exists_path_weights_of_imp(&self, sum: T, cur_sum: T) -> bool {
         use BinaryTree::{Nil, Node};
         match self {
             Nil => return false,
             Node { val, left, right } => {
-                let new_sum = sum + *val;
-                if new_sum == v {
+                let new_sum = cur_sum + *val;
+                if new_sum == sum {
                     return true;
                 }
                 return match (&(**left), &(**right)) {
                     (Nil, Nil) => false,
-                    (_, Nil) => left.exists_path_weights_of_imp(v, new_sum),
-                    (Nil, _) => right.exists_path_weights_of_imp(v, new_sum),
+                    (_, Nil) => left.exists_path_weights_of_imp(sum, new_sum),
+                    (Nil, _) => right.exists_path_weights_of_imp(sum, new_sum),
                     (_, _) => {
-                        left.exists_path_weights_of_imp(v, new_sum)
-                            || right.exists_path_weights_of_imp(v, new_sum)
+                        left.exists_path_weights_of_imp(sum, new_sum)
+                            || right.exists_path_weights_of_imp(sum, new_sum)
                     }
                 };
             }
