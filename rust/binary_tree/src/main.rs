@@ -66,7 +66,6 @@ impl<
         match self {
             Nil => false,
             Node { val, left, right } => {
-                println!("{:?}", val);
                 if *val == v {
                     return true;
                 }
@@ -131,6 +130,41 @@ impl<
                     (_, _) => {
                         left.exists_path_weights_of_imp(sum, new_sum)
                             || right.exists_path_weights_of_imp(sum, new_sum)
+                    }
+                };
+            }
+        }
+    }
+
+    pub fn prune_zero_subtrees(tree: &mut Self) {
+        use BinaryTree::{Nil, Node};
+        match &mut *tree {
+            Nil => return,
+            Node { val, left, right } => {
+                return match (&mut (**left), &mut (**right)) {
+                    (Nil, Nil) => {
+                        if *val == T::default() {
+                            tree.delete();
+                        }
+                    }
+                    (_, Nil) => {
+                        Self::prune_zero_subtrees(left);
+                        if **left == Nil && *val == T::default() {
+                            tree.delete();
+                        }
+                    }
+                    (Nil, _) => {
+                        Self::prune_zero_subtrees(right);
+                        if **right == Nil && *val == T::default() {
+                            tree.delete();
+                        };
+                    }
+                    (_, _) => {
+                        Self::prune_zero_subtrees(left);
+                        Self::prune_zero_subtrees(right);
+                        if **left == Nil && **right == Nil && *val == T::default() {
+                            tree.delete();
+                        };
                     }
                 };
             }
@@ -263,5 +297,87 @@ mod tests {
         assert_eq!(tree3.exists_path_weights_of(27), true); // tail node of path is leaf node
 
         assert_eq!(BinaryTree::Nil.exists_path_weights_of(27), false);
+    }
+
+    #[test]
+    fn test_prune_zero_subtrees() {
+        let mut tree1 = {
+            //       1
+            //        \
+            //         0
+            //        / \
+            //       0   1
+            bin_tree! {
+                val: 1,
+                right: bin_tree! {
+                    val: 0,
+                    left: bin_tree! { val: 0},
+                    right: bin_tree! { val: 1 },
+                },
+            }
+        };
+        let pruned_tree1 = {
+            //       1
+            //        \
+            //         0
+            //          \
+            //           1
+            bin_tree! {
+                val: 1,
+                right: bin_tree! {
+                    val: 0,
+                    right: bin_tree! { val: 1 },
+                },
+            }
+        };
+        BinaryTree::prune_zero_subtrees(&mut tree1);
+        assert_eq!(tree1, pruned_tree1);
+
+        let mut tree2 = {
+            //        1
+            //      /   \
+            //     1     0
+            //    / \   / \
+            //   0   1 0   1
+            //  /
+            // 0
+            bin_tree! {
+                val: 1,
+                left : bin_tree! {
+                    val: 1,
+                    left: bin_tree! {
+                        val: 0,
+                        left: bin_tree! { val: 0 },
+                    },
+                    right: bin_tree! { val: 1},
+                },
+                right: bin_tree! {
+                    val: 0,
+                    left: bin_tree! { val: 0},
+                    right: bin_tree! { val: 1 },
+                },
+            }
+        };
+        let pruned_tree2 = {
+            //        1
+            //      /   \
+            //     1     0
+            //      \     \
+            //       1     1
+            bin_tree! {
+                val: 1,
+                left : bin_tree! {
+                    val: 1,
+                    right: bin_tree! { val: 1},
+                },
+                right: bin_tree! {
+                    val: 0,
+                    right: bin_tree! { val: 1 },
+                },
+            }
+        };
+
+        BinaryTree::prune_zero_subtrees(&mut tree2);
+        assert_eq!(tree2, pruned_tree2);
     }
 }
