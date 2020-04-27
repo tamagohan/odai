@@ -135,39 +135,39 @@ impl<
             }
         }
     }
+}
 
-    pub fn prune_zero_subtrees(tree: &mut Self) {
-        use BinaryTree::{Nil, Node};
-        match &mut *tree {
-            Nil => return,
-            Node { val, left, right } => {
-                return match (&mut (**left), &mut (**right)) {
-                    (Nil, Nil) => {
-                        if *val == T::default() {
-                            tree.delete();
-                        }
+pub fn prune_zero_subtrees(tree: &mut BinaryTree<i32>) {
+    use BinaryTree::{Nil, Node};
+    match &mut *tree {
+        Nil => return,
+        Node { val, left, right } => {
+            return match (&mut (**left), &mut (**right)) {
+                (Nil, Nil) => {
+                    if *val == 0 {
+                        tree.delete();
                     }
-                    (_, Nil) => {
-                        Self::prune_zero_subtrees(left);
-                        if **left == Nil && *val == T::default() {
-                            tree.delete();
-                        }
+                }
+                (_, Nil) => {
+                    prune_zero_subtrees(left);
+                    if **left == Nil && *val == 0 {
+                        tree.delete();
                     }
-                    (Nil, _) => {
-                        Self::prune_zero_subtrees(right);
-                        if **right == Nil && *val == T::default() {
-                            tree.delete();
-                        };
-                    }
-                    (_, _) => {
-                        Self::prune_zero_subtrees(left);
-                        Self::prune_zero_subtrees(right);
-                        if **left == Nil && **right == Nil && *val == T::default() {
-                            tree.delete();
-                        };
-                    }
-                };
-            }
+                }
+                (Nil, _) => {
+                    prune_zero_subtrees(right);
+                    if **right == Nil && *val == 0 {
+                        tree.delete();
+                    };
+                }
+                (_, _) => {
+                    prune_zero_subtrees(left);
+                    prune_zero_subtrees(right);
+                    if **left == Nil && **right == Nil && *val == 0 {
+                        tree.delete();
+                    };
+                }
+            };
         }
     }
 }
@@ -330,7 +330,7 @@ mod tests {
                 },
             }
         };
-        BinaryTree::prune_zero_subtrees(&mut tree1);
+        prune_zero_subtrees(&mut tree1);
         assert_eq!(tree1, pruned_tree1);
 
         let mut tree2 = {
@@ -377,7 +377,7 @@ mod tests {
             }
         };
 
-        BinaryTree::prune_zero_subtrees(&mut tree2);
+        prune_zero_subtrees(&mut tree2);
         assert_eq!(tree2, pruned_tree2);
     }
 }
