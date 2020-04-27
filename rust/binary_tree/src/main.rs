@@ -302,11 +302,11 @@ mod tests {
     #[test]
     fn test_prune_zero_subtrees() {
         let mut tree1 = {
-            //       1
-            //        \
-            //         0
-            //        / \
-            //       0   1
+            // 1
+            //  \
+            //   0
+            //  / \
+            // 0   1
             bin_tree! {
                 val: 1,
                 right: bin_tree! {
@@ -317,11 +317,11 @@ mod tests {
             }
         };
         let pruned_tree1 = {
-            //       1
-            //        \
-            //         0
-            //          \
-            //           1
+            // 1
+            //  \
+            //   0
+            //    \
+            //     1
             bin_tree! {
                 val: 1,
                 right: bin_tree! {
