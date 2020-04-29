@@ -1,7 +1,7 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct BinarySearchTree<T: std::cmp::Ord + std::fmt::Debug>(BinarySearchTreeInner<T>);
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum BinarySearchTreeInner<T> {
     Nil,
     Node {
@@ -37,9 +37,9 @@ impl<T: std::cmp::Ord + std::fmt::Debug> BinarySearchTree<T> {
                 right,
             } => {
                 if val <= cur_v {
-                    Self::find_nil_to_add(right, &val)
-                } else {
                     Self::find_nil_to_add(left, &val)
+                } else {
+                    Self::find_nil_to_add(right, &val)
                 }
             }
         }
@@ -50,4 +50,129 @@ fn main() {
     let mut tree = BinarySearchTree::<i32>::new();
     tree.add(5);
     println!("{:?}", tree);
+}
+
+#[test]
+fn test_add_to_leaf() {
+    use BinarySearchTreeInner::*;
+    let mut tree = BinarySearchTree::<i32>::new();
+
+    // 5
+    tree.add(5);
+    assert_eq!(
+        tree,
+        BinarySearchTree(Node {
+            val: 5,
+            left: Box::new(Nil),
+            right: Box::new(Nil)
+        })
+    );
+
+    //   5
+    //  /
+    // 3
+    tree.add(3);
+    assert_eq!(
+        tree,
+        BinarySearchTree(Node {
+            val: 5,
+            left: Box::new(Node {
+                val: 3,
+                left: Box::new(Nil),
+                right: Box::new(Nil)
+            }),
+            right: Box::new(Nil)
+        })
+    );
+
+    //     5
+    //    /
+    //   3
+    //  /
+    // 3
+    tree.add(3);
+    assert_eq!(
+        tree,
+        BinarySearchTree(Node {
+            val: 5,
+            left: Box::new(Node {
+                val: 3,
+                left: Box::new(Node {
+                    val: 3,
+                    left: Box::new(Nil),
+                    right: Box::new(Nil)
+                }),
+                right: Box::new(Nil)
+            }),
+            right: Box::new(Nil)
+        })
+    );
+
+    //     5
+    //    /
+    //   3
+    //  / \
+    // 3   4
+    tree.add(4);
+    assert_eq!(
+        tree,
+        BinarySearchTree(Node {
+            val: 5,
+            left: Box::new(Node {
+                val: 3,
+                left: Box::new(Node {
+                    val: 3,
+                    left: Box::new(Nil),
+                    right: Box::new(Nil)
+                }),
+                right: Box::new(Node {
+                    val: 4,
+                    left: Box::new(Nil),
+                    right: Box::new(Nil)
+                })
+            }),
+            right: Box::new(Nil)
+        })
+    );
+}
+
+#[test]
+fn test_in_same_order() {
+    let mut tree1 = BinarySearchTree::<i32>::new();
+    tree1.add(1);
+    tree1.add(2);
+
+    let mut tree2 = BinarySearchTree::<i32>::new();
+    tree2.add(1);
+    tree2.add(2);
+
+    assert_eq!(tree1, tree2);
+}
+
+#[test]
+fn test_in_different_order1() {
+    let mut tree1 = BinarySearchTree::<i32>::new();
+    tree1.add(1);
+    tree1.add(2);
+
+    let mut tree2 = BinarySearchTree::<i32>::new();
+    tree2.add(2);
+    tree2.add(1);
+
+    assert_ne!(tree1, tree2);
+}
+
+#[test]
+fn test_in_different_order2() {
+    let mut tree1 = BinarySearchTree::<i32>::new();
+    tree1.add(5);
+    tree1.add(3);
+    tree1.add(7);
+
+    let mut tree2 = BinarySearchTree::<i32>::new();
+    tree2.add(5);
+    tree2.add(7);
+    tree2.add(3);
+
+    assert_eq!(tree1, tree2);
 }
