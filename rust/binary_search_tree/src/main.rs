@@ -46,11 +46,7 @@ impl<T: std::cmp::Ord + std::fmt::Debug> BinarySearchTree<T> {
     }
 }
 
-fn main() {
-    let mut tree = BinarySearchTree::<i32>::new();
-    tree.add(5);
-    println!("{:?}", tree);
-}
+fn main() {}
 
 #[test]
 fn test_add_to_leaf() {
