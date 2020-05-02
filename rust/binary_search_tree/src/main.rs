@@ -44,6 +44,28 @@ impl<T: std::cmp::Ord + std::fmt::Debug> BinarySearchTree<T> {
             }
         }
     }
+
+    pub fn contains(&self, val: &T) -> bool {
+        Self::contains_imp(&self.0, val)
+    }
+
+    fn contains_imp(tree: &BinarySearchTreeInner<T>, val: &T) -> bool {
+        match tree {
+            BinarySearchTreeInner::Nil => false,
+            BinarySearchTreeInner::Node {
+                val: cur_val,
+                left,
+                right,
+            } => {
+                if cur_val == val {
+                    true
+                } else {
+                    BinarySearchTree::contains_imp(left, val)
+                        || BinarySearchTree::contains_imp(right, val)
+                }
+            }
+        }
+    }
 }
 
 fn main() {}
@@ -171,4 +193,52 @@ fn test_in_different_order2() {
     tree2.add(3);
 
     assert_eq!(tree1, tree2);
+}
+
+#[test]
+fn test_contains1() {
+    let mut tree = BinarySearchTree::<i32>::new();
+    // tree only has nil node
+    assert!(!tree.contains(&1));
+
+    // tree is below.
+    //     5
+    //    / \
+    //   3   7
+    tree.add(5);
+    tree.add(3);
+    tree.add(7);
+    assert!(tree.contains(&5));
+    assert!(!tree.contains(&1));
+}
+
+#[test]
+fn test_contains2() {
+    use BinarySearchTreeInner::*;
+    // tree is below.
+    //     5
+    //    / \
+    //   5   5
+    //        \
+    //         7
+    let tree = BinarySearchTree(Node {
+        val: 5,
+        left: Box::new(Node {
+            val: 5,
+            left: Box::new(Nil),
+            right: Box::new(Nil),
+        }),
+        right: Box::new(Node {
+            val: 5,
+            left: Box::new(Nil),
+            right: Box::new(Node {
+                val: 7,
+                left: Box::new(Nil),
+                right: Box::new(Nil),
+            }),
+        }),
+    });
+    assert!(tree.contains(&5));
+    assert!(tree.contains(&7));
+    assert!(!tree.contains(&3));
 }
