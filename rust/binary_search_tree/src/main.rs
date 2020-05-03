@@ -68,25 +68,18 @@ impl<T: std::cmp::Ord + std::fmt::Debug> BinarySearchTree<T> {
     }
 
     pub fn get_all_sorted(&self) -> Vec<&T> {
-        let sorted: Vec<&T> = Vec::new();
-        return Self::get_all_sorted_imp(&self.0, sorted);
+        let mut sorted: Vec<&T> = Vec::new();
+        Self::get_all_sorted_imp(&self.0, &mut sorted);
+        return sorted;
     }
 
-    fn get_all_sorted_imp<'a>(
-        tree: &'a BinarySearchTreeInner<T>,
-        mut sorted: Vec<&'a T>,
-    ) -> Vec<&'a T> {
+    fn get_all_sorted_imp<'t, 'a>(tree: &'t BinarySearchTreeInner<T>, sorted: &'a mut Vec<&'t T>) {
         match tree {
-            BinarySearchTreeInner::Nil => sorted,
+            BinarySearchTreeInner::Nil => {}
             BinarySearchTreeInner::Node { val, right, left } => {
-                if **left != BinarySearchTreeInner::Nil {
-                    sorted = BinarySearchTree::get_all_sorted_imp(left, sorted);
-                }
+                BinarySearchTree::get_all_sorted_imp(left, sorted);
                 sorted.push(val);
-                if **right != BinarySearchTreeInner::Nil {
-                    sorted = BinarySearchTree::get_all_sorted_imp(right, sorted);
-                }
-                return sorted;
+                BinarySearchTree::get_all_sorted_imp(right, sorted);
             }
         }
     }
@@ -281,5 +274,25 @@ fn test_get_all_sorted() {
     tree.add(5);
     tree.add(3);
     tree.add(7);
+    {
+        let v = tree.get_all_sorted();
+        assert_eq!(v, vec![&3, &5, &7]);
+    }
+    println!("{:?}", tree)
+}
+
+#[test]
+fn test_get_all_sorted2() {
+    let mut tree = BinarySearchTree::<i32>::new();
+    let empty_vec: Vec<&i32> = Vec::new();
+    assert_eq!(tree.get_all_sorted(), empty_vec);
+    // tree is below.
+    //     5
+    //    / \
+    //   3   7
+    tree.add(5);
+    tree.add(3);
+    tree.add(7);
     assert_eq!(tree.get_all_sorted(), vec![&3, &5, &7]);
+    println!("{:?}", tree)
 }
