@@ -66,6 +66,30 @@ impl<T: std::cmp::Ord + std::fmt::Debug> BinarySearchTree<T> {
             }
         }
     }
+
+    pub fn get_all_sorted(&self) -> Vec<&T> {
+        let sorted: Vec<&T> = Vec::new();
+        return Self::get_all_sorted_imp(&self.0, sorted);
+    }
+
+    fn get_all_sorted_imp<'a>(
+        tree: &'a BinarySearchTreeInner<T>,
+        mut sorted: Vec<&'a T>,
+    ) -> Vec<&'a T> {
+        match tree {
+            BinarySearchTreeInner::Nil => sorted,
+            BinarySearchTreeInner::Node { val, right, left } => {
+                if **left != BinarySearchTreeInner::Nil {
+                    sorted = BinarySearchTree::get_all_sorted_imp(left, sorted);
+                }
+                sorted.push(val);
+                if **right != BinarySearchTreeInner::Nil {
+                    sorted = BinarySearchTree::get_all_sorted_imp(right, sorted);
+                }
+                return sorted;
+            }
+        }
+    }
 }
 
 fn main() {}
@@ -241,4 +265,21 @@ fn test_contains2() {
     assert!(tree.contains(&5));
     assert!(tree.contains(&7));
     assert!(!tree.contains(&3));
+}
+
+#[test]
+fn test_get_all_sorted() {
+    // tree only has nil node
+    let mut tree = BinarySearchTree::<i32>::new();
+    let empty_vec: Vec<&i32> = Vec::new();
+    assert_eq!(tree.get_all_sorted(), empty_vec);
+
+    // tree is below.
+    //     5
+    //    / \
+    //   3   7
+    tree.add(5);
+    tree.add(3);
+    tree.add(7);
+    assert_eq!(tree.get_all_sorted(), vec![&3, &5, &7]);
 }
