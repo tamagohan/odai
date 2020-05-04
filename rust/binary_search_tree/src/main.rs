@@ -83,6 +83,38 @@ impl<T: std::cmp::Ord + std::fmt::Debug> BinarySearchTree<T> {
             }
         }
     }
+
+    pub fn get_range_sorted(&self, min: &T, max: &T) -> Vec<&T> {
+        let mut sorted: Vec<&T> = Vec::new();
+        Self::get_range_sorted_imp(&self.0, min, max, &mut sorted);
+        sorted
+    }
+
+    fn get_range_sorted_imp<'t, 'a>(
+        tree: &'t BinarySearchTreeInner<T>,
+        min: &T,
+        max: &T,
+        list: &'a mut Vec<&'t T>,
+    ) {
+        match tree {
+            BinarySearchTreeInner::Nil => {}
+            BinarySearchTreeInner::Node {
+                val: cur_val,
+                left,
+                right,
+            } => {
+                if min <= cur_val {
+                    BinarySearchTree::get_range_sorted_imp(left, min, max, list)
+                }
+                if min <= cur_val && cur_val <= max {
+                    list.push(cur_val)
+                }
+                if cur_val <= max {
+                    BinarySearchTree::get_range_sorted_imp(right, min, max, list)
+                }
+            }
+        }
+    }
 }
 
 fn main() {}
@@ -219,9 +251,9 @@ fn test_contains1() {
     assert!(!tree.contains(&1));
 
     // tree is below.
-    //     5
-    //    / \
-    //   3   7
+    //   5
+    //  / \
+    // 3   7
     tree.add(5);
     tree.add(3);
     tree.add(7);
@@ -233,11 +265,11 @@ fn test_contains1() {
 fn test_contains2() {
     use BinarySearchTreeInner::*;
     // tree is below.
-    //     5
-    //    / \
-    //   5   5
-    //        \
-    //         7
+    //   5
+    //  / \
+    // 5   5
+    //      \
+    //       7
     let tree = BinarySearchTree(Node {
         val: 5,
         left: Box::new(Node {
@@ -268,14 +300,39 @@ fn test_get_all_sorted() {
     assert_eq!(tree.get_all_sorted(), empty_vec);
 
     // tree is below.
-    //     5
-    //    / \
-    //   3   7
+    //   5
+    //  / \
+    // 3   7
     tree.add(5);
     tree.add(3);
     tree.add(7);
-    {
-        let v = tree.get_all_sorted();
-        assert_eq!(v, vec![&3, &5, &7]);
-    }
+    assert_eq!(tree.get_all_sorted(), vec![&3, &5, &7]);
+}
+
+#[test]
+fn test_get_range_sorted() {
+    // tree only has nil node
+    let mut tree = BinarySearchTree::<i32>::new();
+    let empty_vec: Vec<&i32> = Vec::new();
+    assert_eq!(tree.get_range_sorted(&3, &6), empty_vec);
+
+    // tree is below.
+    //     5
+    //    / \
+    //   3   7
+    //  /
+    // 1
+    tree.add(5);
+    tree.add(3);
+    tree.add(1);
+    tree.add(7);
+    assert_eq!(tree.get_range_sorted(&0, &6), vec![&1, &3, &5]);
+    assert_eq!(tree.get_range_sorted(&1, &6), vec![&1, &3, &5]);
+    assert_eq!(tree.get_range_sorted(&2, &6), vec![&3, &5]);
+    assert_eq!(tree.get_range_sorted(&3, &6), vec![&3, &5]);
+    assert_eq!(tree.get_range_sorted(&4, &6), vec![&5]);
+    assert_eq!(tree.get_range_sorted(&5, &6), vec![&5]);
+    assert_eq!(tree.get_range_sorted(&6, &6), empty_vec);
+    assert_eq!(tree.get_range_sorted(&6, &7), vec![&7]);
+    assert_eq!(tree.get_range_sorted(&6, &8), vec![&7]);
 }
