@@ -278,21 +278,4 @@ fn test_get_all_sorted() {
         let v = tree.get_all_sorted();
         assert_eq!(v, vec![&3, &5, &7]);
     }
-    println!("{:?}", tree)
-}
-
-#[test]
-fn test_get_all_sorted2() {
-    let mut tree = BinarySearchTree::<i32>::new();
-    let empty_vec: Vec<&i32> = Vec::new();
-    assert_eq!(tree.get_all_sorted(), empty_vec);
-    // tree is below.
-    //     5
-    //    / \
-    //   3   7
-    tree.add(5);
-    tree.add(3);
-    tree.add(7);
-    assert_eq!(tree.get_all_sorted(), vec![&3, &5, &7]);
-    println!("{:?}", tree)
 }
