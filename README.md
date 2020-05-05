@@ -21,5 +21,6 @@ Odai is following problems.
      * [LeetCode 814. Binary Tree Pruning](https://leetcode.com/problems/binary-tree-pruning/)
 1. [Binary Search Tree](https://laysakura.github.io/2019/12/25/rust-DataStructures-Algorithm-BinarySearchTree/)
    * [Rust](./rust/binary_search_tree)
+      * [LeetCode 938. Range Sum of BST](https://leetcode.com/problems/range-sum-of-bst/)
 1. [LRU Cache](https://www.slideshare.net/t_wada/tddbc-exercise#5)
    * [Go](./go/lru_cache/lru_cache.go)

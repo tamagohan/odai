@@ -336,3 +336,21 @@ fn test_get_range_sorted() {
     assert_eq!(tree.get_range_sorted(&6, &7), vec![&7]);
     assert_eq!(tree.get_range_sorted(&6, &8), vec![&7]);
 }
+
+#[test]
+fn leetcode_938_range_sum_bst() {
+    // tree is below.
+    //     5
+    //    / \
+    //   3   7
+    //  /
+    // 1
+    let mut tree = BinarySearchTree::<i32>::new();
+    tree.add(5);
+    tree.add(3);
+    tree.add(1);
+    tree.add(7);
+
+    let sum = tree.get_range_sorted(&2, &8).into_iter().sum::<i32>();
+    assert_eq!(sum, 15)
+}
