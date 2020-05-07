@@ -359,11 +359,11 @@ mod tests {
             }
         };
         let pruned_tree2 = {
-            //        1
-            //      /   \
-            //     1     0
-            //      \     \
-            //       1     1
+            //    1
+            //  /   \
+            // 1     0
+            //  \     \
+            //   1     1
             bin_tree! {
                 val: 1,
                 left : bin_tree! {
