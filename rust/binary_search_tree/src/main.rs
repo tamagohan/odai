@@ -262,37 +262,6 @@ fn test_contains1() {
 }
 
 #[test]
-fn test_contains2() {
-    use BinarySearchTreeInner::*;
-    // tree is below.
-    //   5
-    //  / \
-    // 5   5
-    //      \
-    //       7
-    let tree = BinarySearchTree(Node {
-        val: 5,
-        left: Box::new(Node {
-            val: 5,
-            left: Box::new(Nil),
-            right: Box::new(Nil),
-        }),
-        right: Box::new(Node {
-            val: 5,
-            left: Box::new(Nil),
-            right: Box::new(Node {
-                val: 7,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-        }),
-    });
-    assert!(tree.contains(&5));
-    assert!(tree.contains(&7));
-    assert!(!tree.contains(&3));
-}
-
-#[test]
 fn test_get_all_sorted() {
     // tree only has nil node
     let mut tree = BinarySearchTree::<i32>::new();
