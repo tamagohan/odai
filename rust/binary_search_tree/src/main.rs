@@ -276,6 +276,18 @@ fn test_get_all_sorted() {
     tree.add(3);
     tree.add(7);
     assert_eq!(tree.get_all_sorted(), vec![&3, &5, &7]);
+
+    // tree is below.
+    //   5
+    //  / \
+    // 3   7
+    //  \
+    //   4
+    //  /
+    // 4
+    tree.add(4);
+    tree.add(4);
+    assert_eq!(tree.get_all_sorted(), vec![&3, &4, &4, &5, &7]);
 }
 
 #[test]
